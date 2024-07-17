@@ -1,30 +1,44 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: SAM Template for role
+Description: SAM Template for api
+
+Parameters:
+  Stage:
+    Type: String
+  S3Bucket:
+    Type: String
+  RoleArn:
+    Type: String
 
 Resources:
+  BaseApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-BaseApi"
+      StageName: !Ref Stage
+      BinaryMediaTypes:
+        - "multipart/form-data"
+
   MainFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub "${AWS::StackName}-MainFunction"
       CodeUri: ../lambda/
       Handler: app.lambda_handler
       Runtime: python3.12
       Architectures:
-        - x86_64
+        - arm64
       Events:
         MainApi:
           Type: Api
           Properties:
             Path: /ai
-            Method: get
-
-Outputs:
-  Api:
-    Description: API Gateway endpoint URL for Prod stage for Main function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ai/"
-  MainFunction:
-    Description: Main Lambda Function ARN
-    Value: !GetAtt MainFunction.Arn
-  MainFunctionIamRole:
-    Description: Implicit IAM Role created for Main function
-    Value: !GetAtt MainFunctionRole.Arn
+            Method: post
+            RestApiId: !Ref BaseApi
+            RequestParameters:
+              - method.request.header.Authorization
+              - method.request.header.Content-Type
+      Environment:
+        Variables:
+          S3Bucket: !Ref S3Bucket
+      Role: !Ref RoleArn

@@ -6,24 +6,24 @@ version = 0.1
 [staging.deploy]
 [staging.deploy.parameters]
 stack_name = "sam-boilerplate-stg"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-onemjhcyapmr"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-9x2g0kj6kh2l"
 #s3_resolve = true
 s3_prefix = "sam-boilerplate-stg"
 region = "us-east-1"
-capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM"
 parameter_overrides = "Stage=\"staging\""
 image_repositories = []
-confirm_changeset = true
+confirm_changeset = false
 
 [product]
 [product.deploy]
 [product.deploy.parameters]
 stack_name = "sam-boilerplate-prod"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-onemjhcyapmr"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-9x2g0kj6kh2l"
 #s3_resolve = true
 s3_prefix = "sam-boilerplate-prod"
 region = "us-east-1"
-capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM"
 parameter_overrides = "Stage=\"product\""
 image_repositories = []
 confirm_changeset = true

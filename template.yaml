@@ -18,11 +18,11 @@ Mappings:
     staging:
       S3Bucket: sam-boilerplate-stg-s3
     product:
-      S3Bucket: sam-boilerplate-stg-prod
+      S3Bucket: sam-boilerplate-prod-s3
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 30
     MemorySize: 128
     Tracing: Active
     LoggingConfig:
@@ -31,17 +31,28 @@ Globals:
     TracingEnabled: true
 
 Resources:
-  S3:
+  S3Stack:
     Type: AWS::Serverless::Application
     Properties:
       Location: infrastructure/s3.yaml
       Parameters:
-        S3Bucket: !FindInMap [Configs, !Ref Stage, S3Bucket]
+        S3Bucket: !FindInMap [ Configs, !Ref Stage, S3Bucket ]
 
-  Api:
+  RoleStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: infrastructure/role.yaml
+      Parameters:
+        S3Bucket: !FindInMap [ Configs, !Ref Stage, S3Bucket ]
+
+  ApiStack:
     Type: AWS::Serverless::Application
     Properties:
       Location: infrastructure/api.yaml
+      Parameters:
+        Stage: !Ref Stage
+        S3Bucket: !FindInMap [ Configs, !Ref Stage, S3Bucket ]
+        RoleArn: !GetAtt RoleStack.Outputs.RootAccessRoleArn
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
