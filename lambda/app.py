@@ -46,28 +46,39 @@ def lambda_handler(event, context):
     )
 
     prompt = form["prompt"][0]
-    img = base64.b64encode(str(files).encode("utf-8")).decode('utf-8')
-    print("prompt", prompt)
-    print("img", len(img))
+    img_data = files["img"][0].file.read()
 
-    response_bedrock = client_bedrock.invoke_model(contentType='application/json', accept='application/json',
-                                                   modelId='stability.stable-diffusion-xl-v1',
-                                                   body=json.dumps(
-                                                       {
-                                                           "text_prompts": [
-                                                               {
-                                                                   "text": prompt,
-                                                                   "weight": 1
-                                                               }
-                                                           ],
-                                                           "cfg_scale": 10,
-                                                           "seed": 0,
-                                                           "steps": 50,
-                                                           "width": 512,
-                                                           "height": 512,
-                                                           "init_image": img
-                                                       }
-                                                   ))
+    s3_response = client_s3.put_object(
+        Body=img_data,
+        Bucket=os.getenv("S3Bucket"),
+        Key='test_' + datetime.datetime.today().strftime('%Y-%m-%d/%H-%M-%S') + ".jpg"
+    )
+    print("s3_response", s3_response)
+
+    img_str = base64.b64encode(img_data).decode("utf-8")
+
+    print("prompt", prompt)
+    print("img len", len(img_str))
+
+    response_bedrock = client_bedrock.invoke_model(
+        contentType='application/json', accept='application/json',
+        modelId='stability.stable-diffusion-xl-v1',
+        body=json.dumps(
+            {
+                "text_prompts": [
+                    {
+                        "text": prompt,
+                        "weight": 1
+                    }
+                ],
+                "cfg_scale": 10,
+                "seed": 0,
+                "steps": 50,
+                "width": 512,
+                "height": 512,
+                "init_image": img_str
+            }
+        ))
 
     response_bedrock_byte = json.loads(response_bedrock['body'].read())
     response_bedrock_base64 = response_bedrock_byte['artifacts'][0]['base64']
@@ -89,5 +100,7 @@ def lambda_handler(event, context):
     print("generate_presigned_url", generate_presigned_url)
     return {
         'statusCode': 200,
-        'body': generate_presigned_url
+        'body': json.dumps({
+            "url": generate_presigned_url
+        })
     }

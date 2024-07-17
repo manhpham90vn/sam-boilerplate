@@ -29,13 +29,13 @@ Resources:
                 Action:
                   - logs:CreateLogGroup
                 Resource:
-                  - arn:aws:logs:us-east-1:047590809543:*
+                  - arn:aws:logs:*:*:*
               - Effect: Allow
                 Action:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource:
-                  - arn:aws:logs:us-east-1:047590809543:log-group:/aws/lambda/*:*
+                  - arn:aws:logs:*:*:log-group:/aws/lambda/*:*
               - Effect: Allow
                 Action:
                   - s3:PutObject
