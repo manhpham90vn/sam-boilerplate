@@ -2,30 +2,28 @@
 # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-config.html
 version = 0.1
 
-[default]
-[default.global.parameters]
-stack_name = "sam-boilerplate"
-
-[default.build.parameters]
-cached = true
-parallel = true
-
-[default.validate.parameters]
-lint = true
-
-[default.deploy.parameters]
-capabilities = "CAPABILITY_IAM"
+[staging]
+[staging.deploy]
+[staging.deploy.parameters]
+stack_name = "sam-boilerplate-stg"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-onemjhcyapmr"
+#s3_resolve = true
+s3_prefix = "sam-boilerplate-stg"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+parameter_overrides = "Stage=\"staging\""
+image_repositories = []
 confirm_changeset = true
-resolve_s3 = true
 
-[default.package.parameters]
-resolve_s3 = true
-
-[default.sync.parameters]
-watch = true
-
-[default.local_start_api.parameters]
-warm_containers = "EAGER"
-
-[default.local_start_lambda.parameters]
-warm_containers = "EAGER"
+[product]
+[product.deploy]
+[product.deploy.parameters]
+stack_name = "sam-boilerplate-prod"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-onemjhcyapmr"
+#s3_resolve = true
+s3_prefix = "sam-boilerplate-prod"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+parameter_overrides = "Stage=\"product\""
+image_repositories = []
+confirm_changeset = true

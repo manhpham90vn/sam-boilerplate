@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for role
+
+Resources:
+  MainFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        MainApi:
+          Type: Api
+          Properties:
+            Path: /ai
+            Method: get
+
+Outputs:
+  Api:
+    Description: API Gateway endpoint URL for Prod stage for Main function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ai/"
+  MainFunction:
+    Description: Main Lambda Function ARN
+    Value: !GetAtt MainFunction.Arn
+  MainFunctionIamRole:
+    Description: Implicit IAM Role created for Main function
+    Value: !GetAtt MainFunctionRole.Arn
